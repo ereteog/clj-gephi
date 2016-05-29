@@ -3,6 +3,7 @@
   (require [clj-gephi.graph :as g])
   (require [clj-gephi.filters :as f])
   (require [clj-gephi.statistics :as stat])
+  (require [clj-gephi.layout :as lay])
   (require [clj-gephi.importers :as imp])
   )
 
@@ -31,4 +32,13 @@
   (let [d (stat/distance! gm true)]
     (println "diameter: " (stat/diameter d))
     (println "avg-distance: " (stat/avg-distance d)))
+
+  (println "starting Yifan Hu Layout")
+  (let [lay-opts {:step-displacement 1
+                 :nb-loops 100
+                 :optimal-distance 200}
+        layout (lay/yifan-hu! gm lay-opts)]
+    (println "completed layout")
+    )
+
   )
