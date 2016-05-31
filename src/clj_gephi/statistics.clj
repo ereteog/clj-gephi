@@ -1,6 +1,13 @@
 (ns clj-gephi.statistics
   (import [org.gephi.statistics.plugin GraphDistance]))
 
+(def betweenness-idx GraphDistance/BETWEENNESS)
+
+(defn column
+  [gm col-idx]
+  (-> (.getNodeTable gm)
+      (.getColumn col-idx)))
+
 (defn distance!
   "GraphModel -> GraphDistance"
   [gm directed?]
