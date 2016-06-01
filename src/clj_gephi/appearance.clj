@@ -30,21 +30,20 @@
   [am graph gm]
   (centrality-ranking am graph gm stats/betweenness-idx))
 
-(defn color-by
+(defn color-by!
   [ranking graph am colors positions]
   (let [dt (.getTransformer ranking)]
-    (.setColors dt (into-array Color
-                               (map #(Color. %) colors)))
+    (.setColors dt (into-array Color colors))
     (.setColorPositions dt (float-array positions))
     (.transform ac ranking))
   am)
 
-(defn color-by-degree
+(defn color-by-degree!
   [graph am colors positions]
-  (color-by (degree-ranking am graph)
+  (color-by! (degree-ranking am graph)
             graph am colors positions))
 
-(defn size-by
+(defn size-by!
   [ranking graph am min-size max-size]
   (let [ct (.getTransformer ranking)]
     (.setMinSize ct min-size)
@@ -52,15 +51,7 @@
     (.transform ac ranking))
   am)
 
-(defn size-by-betweenness
+(defn size-by-betweenness!
   [graph am gm min-size max-size]
-  (size-by (betweenness-ranking am graph gm)
+  (size-by! (betweenness-ranking am graph gm)
            graph am min-size max-size))
-
-;;        //Rank size by centrality
-;;        Column centralityColumn = graphModel.getNodeTable().getColumn(GraphDistance.BETWEENNESS);
-;;        RankingNodeSizeTransformer centralityTransformer = (RankingNodeSizeTransformer) centralityRanking.getTransformer();
-;;        centralityTransformer.setMinSize(3);
-;;        centralityTransformer.setMaxSize(10);
-;;        appearanceController.transform(centralityRanking);
-

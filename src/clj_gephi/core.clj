@@ -4,8 +4,12 @@
   (require [clj-gephi.filters :as f])
   (require [clj-gephi.statistics :as stat])
   (require [clj-gephi.layout :as lay])
-  (require [clj-gephi.importers :as imp])
+  (require [clj-gephi.io.import :as imp])
+  (require [clj-gephi.io.export :as exp])
   (require [clj-gephi.appearance :as app])
+  (require [clj-gephi.preview :as prev])
+  (import [java.awt Color])
+  (import [java.awt Font])
   )
 
 (defn test-gephi
@@ -34,17 +38,28 @@
     (println "diameter: " (stat/diameter d))
     (println "avg-distance: " (stat/avg-distance d)))
 
-;;  (println "starting Yifan Hu Layout")
-;;  (let [lay-opts {:step-displacement 1
-;;                 :nb-loops 100
-;;                 :optimal-distance 200}
-;;        layout (lay/yifan-hu! gm lay-opts)]
-;;    (println "completed layout")
-;;    )
+  (println "starting Yifan Hu Layout")
+  (let [lay-opts {:step-displacement 1
+                 :nb-loops 100
+                 :optimal-distance 200}
+        layout (lay/yifan-hu! gm lay-opts)]
+    (println "completed layout")
+    )
 
   (let [graph (g/visible-graph gm)
         am (app/appearance-model)]
-    (app/color-by-degree graph am
-                         [0xFEF0D9 0xB3000] [0 1])
-    (app/size-by-betweenness graph am gm 4 40))
+    (app/color-by-degree! graph am
+                         [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+    (app/size-by-betweenness! graph am gm 4 40))
+
+  (let [pm (prev/preview-model)
+        font (-> (prev/node-font-label pm)
+                 (.deriveFont 8))]
+    (prev/show-node-labels! pm true)
+    (prev/edge-color! pm Color/PINK)
+    (prev/edge-thickness! pm 0.1)
+    (prev/node-font-label! pm font)
+    )
+
+  (exp/export-graph-file! "test.pdf")
   )

@@ -1,4 +1,4 @@
-(ns clj-gephi.importers
+(ns clj-gephi.io.import
   (require [clojure.java.io :as io])
   (import [org.gephi.io.processor.plugin DefaultProcessor])
   (import [org.gephi.io.importer.api Container ImportController EdgeDirectionDefault])
