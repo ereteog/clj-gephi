@@ -48,18 +48,21 @@
 
   (let [graph (g/visible-graph gm)
         am (app/appearance-model)]
-    (app/color-by-degree! graph am
-                         [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+    ;; (app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+    (app/color-by-modularity! am graph gm)
     (app/size-by-betweenness! graph am gm 4 40))
 
   (let [pm (prev/preview-model)
         font (-> (prev/node-font-label pm)
                  (.deriveFont 8))]
     (prev/show-node-labels! pm true)
-    (prev/edge-color! pm Color/PINK)
+    (prev/edge-color! pm Color/LIGHT_GRAY)
     (prev/edge-thickness! pm 0.1)
     (prev/node-font-label! pm font)
     )
 
   (exp/export-graph-file! "test.pdf")
+  (exp/export-graph-file! "test.png")
+  (exp/export-graph-file! "test.svg")
+  (exp/export-graph-file! "test.gexf")
   )

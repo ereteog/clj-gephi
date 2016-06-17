@@ -5,6 +5,12 @@
   (import [org.gephi.appearance.api Function])
   (import [org.gephi.appearance.plugin RankingElementColorTransformer])
   (import [org.gephi.appearance.plugin RankingNodeSizeTransformer])
+  (import [org.gephi.appearance.api Function])
+  (import [org.gephi.appearance.api Partition])
+  (import [org.gephi.appearance.api PartitionFunction])
+  (import [org.gephi.appearance.plugin PartitionElementColorTransformer])
+  (import [org.gephi.appearance.plugin.palette Palette])
+  (import [org.gephi.appearance.plugin.palette PaletteManager])
   (import [java.awt Color])
   (require [clj-gephi.statistics :as stats])
   )
@@ -15,33 +21,81 @@
   []
   (.getModel ac))
 
+(defn function
+  "AppearanceModel -> Graph -> GraphFunction -> Transformer -> Function"
+  [am graph function transformer]
+  (.getNodeFunction am graph function transformer))
+
 (defn degree-ranking
+  "AppearanceModel -> Graph -> Function"
   [am graph]
-  (.getNodeFunction am graph AppearanceModel$GraphFunction/NODE_DEGREE RankingElementColorTransformer)
+  (function am graph AppearanceModel$GraphFunction/NODE_DEGREE RankingElementColorTransformer)
   )
 
 (defn centrality-ranking
+  "AppearanceModel -> Graph -> GraphModel -> String -> Function"
   [am graph gm c-idx]
   (.getNodeFunction am graph
                     (stats/column gm c-idx)
                     RankingNodeSizeTransformer))
 
 (defn betweenness-ranking
+  "AppearanceModel -> Graph -> GraphModel -> Function"
   [am graph gm]
   (centrality-ranking am graph gm stats/betweenness-idx))
 
+(defn generate-palette
+  "Integer -> Palette"
+  [size]
+  (-> (PaletteManager/getInstance)
+      (.generatePalette size)))
+
+(defn random-palette
+  "Integer -> Palette"
+  [size]
+  (-> (.getInstance PaletteManager)
+      (.randomPalette size)))
+
+(defn partition-function
+  "AppearanceModel -> Graph -> GraphModel -> String -> Function"
+  [am graph gm property]
+  (let [column (-> (.getNodeTable gm)
+                   (.getColumn property))]
+    (function am graph column PartitionElementColorTransformer)))
+
 (defn color-by!
-  [ranking graph am colors positions]
-  (let [dt (.getTransformer ranking)]
-    (.setColors dt (into-array Color colors))
-    (.setColorPositions dt (float-array positions))
+  [ranking am graph colors positions]
+  (let [t (.getTransformer ranking)]
+    (.setColors t (into-array Color colors))
+    (.setColorPositions t (float-array positions))
     (.transform ac ranking))
   am)
 
 (defn color-by-degree!
-  [graph am colors positions]
+  [am graph colors positions]
   (color-by! (degree-ranking am graph)
-            graph am colors positions))
+             am graph colors positions))
+
+(defn color-by-partition!
+  ([am graph gm property palette-fn]
+  (let [func (partition-function am graph gm property)
+        partition (-> (cast PartitionFunction func)
+                      .getPartition)
+        palette (-> (.size partition)
+                    palette-fn)]
+    (->> (.getColors palette)
+         (.setColors partition))
+    (.transform ac func))
+    am)
+  ([am graph gm property]
+   (color-by-partition! am graph gm property generate-palette)))
+
+(defn color-by-modularity!
+  ([am graph gm palette-fn]
+   (color-by-partition! am graph gm stats/modularity-idx palette-fn))
+  ([am graph gm]
+   (color-by-partition! am graph gm stats/modularity-idx))
+  )
 
 (defn size-by!
   [ranking graph am min-size max-size]
