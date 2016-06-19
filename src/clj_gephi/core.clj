@@ -38,13 +38,31 @@
     (println "diameter: " (stat/diameter d))
     (println "avg-distance: " (stat/avg-distance d)))
 
-  (println "starting Yifan Hu Layout")
-  (let [lay-opts {:step-displacement 1
-                 :nb-loops 100
-                 :optimal-distance 200}
-        layout (lay/yifan-hu! gm lay-opts)]
-    (println "completed layout")
-    )
+  (let [force-opts {:adjust-sizes? true
+                  :attraction-strength 1.5
+                  :repulsion-strength  0.5}
+        yifan-opts {:step-displacement 1
+                    :optimal-distance 200.0}
+        label-adjust-opts {:adjust-by-size? true}]
+
+      ;  (println "starting Force Atlas Layout")
+      ;  (lay/force-atlas! gm 30 force-opts)
+      ;  (println "done")
+      ;  (println "starting Yifan Hu Layout")
+      ;  (lay/yifan-hu! gm 30 yifan-opts)
+      ;  (println "done")
+      ;  (println "starting Label Ajust")
+      ;  (lay/label-adjust! gm 50 label-adjust-opts)
+      ;  (println "done")
+
+        (println "starting Auto Layout")
+        (time
+         (->> [[(lay/force-atlas force-opts) 0.65]
+               [(lay/yifan-hu yifan-opts) 0.2]
+               [(lay/label-adjust label-adjust-opts) 0.15]]
+              (lay/auto-layout! gm 10000)))
+         (println "done")
+        )
 
   (let [graph (g/visible-graph gm)
         am (app/appearance-model)]
