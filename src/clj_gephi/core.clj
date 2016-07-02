@@ -14,17 +14,18 @@
 
 (defn test-gephi
   "https://github.com/gephi/gephi-toolkit-demos/blob/master/src/main/java/org/gephi/toolkit/demos/HeadlessSimple.java"
-  []
+  [filepath]
   (def wp (p/new-project!))
   (def gm (g/graph-model))
-  (imp/import-graph-file! wp "resources/netowrk-twitter-sarko-20130706.gexf" true)
+  ;;(imp/import-graph-file! wp "resources/netowrk-twitter-sarko-20130706.gexf" true)
+  (imp/import-graph-file! wp filepath true)
 
   ;; print graph stats
   (let [graph (g/directed-graph gm)]
     (println "Nodes: " (g/node-count graph))
     (println "Edges: " (g/edge-count graph)))
 
-  (let [d (stat/distance! gm true)]
+  (let [d (stat/distance! gm false)]
     (println "diameter: " (stat/diameter d))
     (println "avg-distance: " (stat/avg-distance d)))
 
@@ -34,9 +35,15 @@
     (println "Filtered nodes: " (g/node-count graph))
     (println "Filtered edges: " (g/edge-count graph)))
 
-  (let [d (stat/distance! gm true)]
+  (let [d  (stat/distance! gm false)
+        pr (stat/pagerank! gm false)
+        mo (stat/modularity! gm)]
     (println "diameter: " (stat/diameter d))
-    (println "avg-distance: " (stat/avg-distance d)))
+    (println "avg-distance: " (stat/avg-distance d))
+    (spit "distance.html" (.getReport d))
+    (spit "pagerank.html" (.getReport pr))
+    (spit "modularity.html" (.getReport mo))
+    )
 
   (let [force-opts {:adjust-sizes? true
                   :attraction-strength 1.5
@@ -45,30 +52,31 @@
                     :optimal-distance 200.0}
         label-adjust-opts {:adjust-by-size? true}]
 
-      ;  (println "starting Force Atlas Layout")
-      ;  (lay/force-atlas! gm 30 force-opts)
-      ;  (println "done")
-      ;  (println "starting Yifan Hu Layout")
-      ;  (lay/yifan-hu! gm 30 yifan-opts)
-      ;  (println "done")
-      ;  (println "starting Label Ajust")
-      ;  (lay/label-adjust! gm 50 label-adjust-opts)
-      ;  (println "done")
+       ; (println "starting Force Atlas Layout")
+       ; (lay/force-atlas! gm 20 force-opts)
+       ; (println "done")
+       ; (println "starting Yifan Hu Layout")
+       ; (lay/yifan-hu! gm 30 yifan-opts)
+       ; (println "done")
+       ; (println "starting Label Ajust")
+       ; (lay/label-adjust! gm 50 label-adjust-opts)
+       ; (println "done")
 
         (println "starting Auto Layout")
         (time
-         (->> [[(lay/force-atlas force-opts) 0.65]
+         (->> [[(lay/force-atlas force-opts) 0.75]
                [(lay/yifan-hu yifan-opts) 0.2]
-               [(lay/label-adjust label-adjust-opts) 0.15]]
-              (lay/auto-layout! gm 10000)))
+               [(lay/label-adjust label-adjust-opts) 0.05]]
+              (lay/auto-layout! gm 30000)))
          (println "done")
-        )
+       )
 
   (let [graph (g/visible-graph gm)
         am (app/appearance-model)]
-    ;; (app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+    ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
     (app/color-by-modularity! am graph gm)
-    (app/size-by-betweenness! graph am gm 4 40))
+    (app/size-by-pagerank! graph am gm 8 20)
+    )
 
   (let [pm (prev/preview-model)
         font (-> (prev/node-font-label pm)

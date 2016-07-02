@@ -1,14 +1,24 @@
 (ns clj-gephi.statistics
   (import [org.gephi.statistics.plugin Modularity])
+  (import [org.gephi.statistics.plugin PageRank])
   (import [org.gephi.statistics.plugin GraphDistance]))
 
 (def betweenness-idx GraphDistance/BETWEENNESS)
+(def pagerank-idx PageRank/PAGERANK)
 (def modularity-idx Modularity/MODULARITY_CLASS)
 
 (defn column
   [gm col-idx]
   (-> (.getNodeTable gm)
       (.getColumn col-idx)))
+
+(defn pagerank!
+  "GraphModel -> PageRank"
+  [gm directed?]
+  (let [pr (PageRank.)]
+    (.setDirected pr directed?)
+    (.execute pr gm)
+    pr))
 
 (defn distance!
   "GraphModel -> GraphDistance"

@@ -39,6 +39,11 @@
                     (stats/column gm c-idx)
                     RankingNodeSizeTransformer))
 
+(defn pagerank-ranking
+  "AppearanceModel -> Graph -> GraphModel -> Function"
+  [am graph gm]
+  (centrality-ranking am graph gm stats/pagerank-idx))
+
 (defn betweenness-ranking
   "AppearanceModel -> Graph -> GraphModel -> Function"
   [am graph gm]
@@ -104,6 +109,11 @@
     (.setMaxSize ct max-size)
     (.transform ac ranking))
   am)
+
+(defn size-by-pagerank!
+  [graph am gm min-size max-size]
+  (size-by! (pagerank-ranking am graph gm)
+            graph am min-size max-size))
 
 (defn size-by-betweenness!
   [graph am gm min-size max-size]
