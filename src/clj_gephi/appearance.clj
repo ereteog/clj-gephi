@@ -26,7 +26,7 @@
   [am graph function transformer]
   (.getNodeFunction am graph function transformer))
 
-(defn degree-ranking
+(defn color-degree-ranking
   "AppearanceModel -> Graph -> Function"
   [am graph]
   (function am graph AppearanceModel$GraphFunction/NODE_DEGREE RankingElementColorTransformer)
@@ -38,6 +38,11 @@
   (.getNodeFunction am graph
                     (stats/column gm c-idx)
                     RankingNodeSizeTransformer))
+
+(defn degree-ranking
+  "AppearanceModel -> Graph -> GraphModel -> Function"
+  [am graph gm]
+  (centrality-ranking am graph gm stats/degree-idx))
 
 (defn pagerank-ranking
   "AppearanceModel -> Graph -> GraphModel -> Function"
@@ -78,7 +83,7 @@
 
 (defn color-by-degree!
   [am graph colors positions]
-  (color-by! (degree-ranking am graph)
+  (color-by! (color-degree-ranking am graph)
              am graph colors positions))
 
 (defn color-by-partition!
@@ -109,6 +114,12 @@
     (.setMaxSize ct max-size)
     (.transform ac ranking))
   am)
+
+(defn size-by-degree!
+  [graph am gm min-size max-size]
+  (size-by! (degree-ranking am graph gm)
+            graph am min-size max-size))
+  
 
 (defn size-by-pagerank!
   [graph am gm min-size max-size]

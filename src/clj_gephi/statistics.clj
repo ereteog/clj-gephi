@@ -1,8 +1,12 @@
 (ns clj-gephi.statistics
   (import [org.gephi.statistics.plugin Modularity])
   (import [org.gephi.statistics.plugin PageRank])
+  (import [org.gephi.statistics.plugin Degree])
   (import [org.gephi.statistics.plugin GraphDistance]))
 
+(def degree-idx Degree/DEGREE)
+(def indegree-idx Degree/INDEGREE)
+(def outdegree-idx Degree/OUTDEGREE)
 (def betweenness-idx GraphDistance/BETWEENNESS)
 (def pagerank-idx PageRank/PAGERANK)
 (def modularity-idx Modularity/MODULARITY_CLASS)
@@ -11,6 +15,19 @@
   [gm col-idx]
   (-> (.getNodeTable gm)
       (.getColumn col-idx)))
+
+(defn degree!
+  "GraphModel -> Degree"
+  [gm]
+  (let [d (Degree.)]
+    (.execute d gm)
+    d))
+
+(defn average-degree
+  "Degree -> Double"
+  [degree]
+  (.getAverageDegree degree)
+  )
 
 (defn pagerank!
   "GraphModel -> PageRank"

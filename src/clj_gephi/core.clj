@@ -18,10 +18,10 @@
   (def wp (p/new-project!))
   (def gm (g/graph-model))
   ;;(imp/import-graph-file! wp "resources/netowrk-twitter-sarko-20130706.gexf" true)
-  (imp/import-graph-file! wp filepath true)
+  (imp/import-graph-file! wp filepath false)
 
   ;; print graph stats
-  (let [graph (g/directed-graph gm)]
+  (let [graph (g/undirected-graph gm)]
     (println "Nodes: " (g/node-count graph))
     (println "Edges: " (g/edge-count graph)))
 
@@ -29,21 +29,44 @@
     (println "diameter: " (stat/diameter d))
     (println "avg-distance: " (stat/avg-distance d)))
 
-  (println "filtering nodes with degree less than 5")
-  (f/filter-by-degree! gm (f/visible-view gm) 5)
+
+  (let [dist (stat/distance! gm false)
+        pr   (stat/pagerank! gm false)
+        d    (stat/degree! gm)
+        mo   (stat/modularity! gm)]
+    (println "average degree: " (stat/average-degree d))
+    (println "diameter: "       (stat/diameter dist))
+    (println "avg-distance: "   (stat/avg-distance dist))
+    (spit "distance.html"       (.getReport dist))
+    (spit "degree.html"         (.getReport d))
+    (spit "pagerank.html"       (.getReport pr))
+    (spit "modularity.html"     (.getReport mo))
+    )
+
+  (let [graph (g/visible-graph gm)
+        am (app/appearance-model)]
+                                        ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+;;    (app/color-by-modularity! am graph gm)
+                                        ;   (app/size-by-pagerank! graph am gm 8 20)
+    ;;(app/size-by-degree! graph am gm 8 20)
+    ;;(app/size-by-betweenness! graph am gm 8 20)
+    )
+
+  (let [pm (prev/preview-model)
+        font (-> (prev/node-font-label pm)
+                 (.deriveFont 8))]
+    (prev/show-node-labels! pm false)
+    (prev/edge-color! pm Color/LIGHT_GRAY)
+    (prev/edge-thickness! pm 0.1)
+    (prev/node-font-label! pm font)
+    )
+
+
+  (println "filtering nodes with degree less than 3")
+  (f/filter-by-degree! gm (f/visible-view gm) 3)
   (let [graph (g/visible-graph gm)]
     (println "Filtered nodes: " (g/node-count graph))
     (println "Filtered edges: " (g/edge-count graph)))
-
-  (let [d  (stat/distance! gm false)
-        pr (stat/pagerank! gm false)
-        mo (stat/modularity! gm)]
-    (println "diameter: " (stat/diameter d))
-    (println "avg-distance: " (stat/avg-distance d))
-    (spit "distance.html" (.getReport d))
-    (spit "pagerank.html" (.getReport pr))
-    (spit "modularity.html" (.getReport mo))
-    )
 
   (let [force-opts {:adjust-sizes? true
                   :attraction-strength 1.5
@@ -67,25 +90,10 @@
          (->> [[(lay/force-atlas force-opts) 0.75]
                [(lay/yifan-hu yifan-opts) 0.2]
                [(lay/label-adjust label-adjust-opts) 0.05]]
-              (lay/auto-layout! gm 30000)))
+              (lay/auto-layout! gm 120000)))
          (println "done")
        )
 
-  (let [graph (g/visible-graph gm)
-        am (app/appearance-model)]
-    ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
-    (app/color-by-modularity! am graph gm)
-    (app/size-by-pagerank! graph am gm 8 20)
-    )
-
-  (let [pm (prev/preview-model)
-        font (-> (prev/node-font-label pm)
-                 (.deriveFont 8))]
-    (prev/show-node-labels! pm true)
-    (prev/edge-color! pm Color/LIGHT_GRAY)
-    (prev/edge-thickness! pm 0.1)
-    (prev/node-font-label! pm font)
-    )
 
   (exp/export-graph-file! "test.pdf")
   (exp/export-graph-file! "test.png")

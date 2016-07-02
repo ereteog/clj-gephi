@@ -10,6 +10,11 @@
   []
   (.getGraphModel gc))
 
+(defn undirected-graph
+  "GraphModel -> UndirectedGraph"
+  [gm]
+  (.getUndirectedGraph gm))
+
 (defn directed-graph
   "GraphModel -> DirectedGraph"
   [gm]
