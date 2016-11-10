@@ -30,73 +30,90 @@
     (println "avg-distance: " (stat/avg-distance d)))
 
 
-  (let [dist (stat/distance! gm false)
+  (let [
+        dist (stat/distance! gm false)
         pr   (stat/pagerank! gm false)
         d    (stat/degree! gm)
-        mo   (stat/modularity! gm)]
+        mo   (stat/modularity! gm)
+        ]
     (println "average degree: " (stat/average-degree d))
     (println "diameter: "       (stat/diameter dist))
     (println "avg-distance: "   (stat/avg-distance dist))
-    (spit "distance.html"       (.getReport dist))
-    (spit "degree.html"         (.getReport d))
-    (spit "pagerank.html"       (.getReport pr))
-    (spit "modularity.html"     (.getReport mo))
+    (spit (str filepath "distance.html"  )     (.getReport dist))
+    (spit (str filepath "degree.html"    )     (.getReport d))
+    (spit (str filepath "pagerank.html"  )     (.getReport pr))
+    (spit (str filepath "modularity.html")     (.getReport mo))
     )
 
   (let [graph (g/visible-graph gm)
         am (app/appearance-model)]
                                         ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
-;;    (app/color-by-modularity! am graph gm)
-                                        ;   (app/size-by-pagerank! graph am gm 8 20)
+    (app/color-by-modularity! am graph gm)
+    (app/size-by-pagerank! graph am gm 3 30)
     ;;(app/size-by-degree! graph am gm 8 20)
-    ;;(app/size-by-betweenness! graph am gm 8 20)
+    ;;(app/size-by-betweenness! graph am gm 3 30)
     )
 
   (let [pm (prev/preview-model)
         font (-> (prev/node-font-label pm)
                  (.deriveFont 8))]
-    (prev/show-node-labels! pm false)
+    (prev/show-node-labels! pm true)
     (prev/edge-color! pm Color/LIGHT_GRAY)
-    (prev/edge-thickness! pm 0.1)
+    (prev/edge-thickness! pm 0.01)
     (prev/node-font-label! pm font)
     )
 
 
-  (println "filtering nodes with degree less than 3")
-  (f/filter-by-degree! gm (f/visible-view gm) 3)
+  (println "filtering nodes with degree less than 4")
+  (f/filter-by-degree! gm (f/visible-view gm) 4)
   (let [graph (g/visible-graph gm)]
     (println "Filtered nodes: " (g/node-count graph))
     (println "Filtered edges: " (g/edge-count graph)))
 
-  (let [force-opts {:adjust-sizes? true
-                  :attraction-strength 1.5
-                  :repulsion-strength  0.5}
+  (let [force-opts {:attraction-strength 1.5
+                    :repulsion-strength  0.5}
         yifan-opts {:step-displacement 1
                     :optimal-distance 200.0}
-        label-adjust-opts {:adjust-by-size? true}]
+        label-adjust-opts {:adjust-by-size? true}
+        noverlap-opts {:margin 10.0
+                           :ratio  2.0}]
 
-       ; (println "starting Force Atlas Layout")
-       ; (lay/force-atlas! gm 20 force-opts)
-       ; (println "done")
-       ; (println "starting Yifan Hu Layout")
-       ; (lay/yifan-hu! gm 30 yifan-opts)
-       ; (println "done")
-       ; (println "starting Label Ajust")
-       ; (lay/label-adjust! gm 50 label-adjust-opts)
-       ; (println "done")
-
-        (println "starting Auto Layout")
         (time
-         (->> [[(lay/force-atlas force-opts) 0.75]
-               [(lay/yifan-hu yifan-opts) 0.2]
-               [(lay/label-adjust label-adjust-opts) 0.05]]
-              (lay/auto-layout! gm 120000)))
-         (println "done")
+         (do
+           (println "starting Force Atlas Layout")
+           (clojure.pprint/pprint force-opts)
+           (lay/force-atlas! gm 50 force-opts)
+           (println "done")))
+        (time
+         (do
+           (println "starting Yifan Hu Layout")
+           (clojure.pprint/pprint yifan-opts)
+           (lay/yifan-hu! gm 50 yifan-opts)
+           (println "done")))
+        (time
+         (do
+           (println "starting Noverlap")
+           (clojure.pprint/pprint noverlap-opts)
+           (lay/noverlap! gm 50 noverlap-opts)))
+        (time
+         (do
+             (println "starting Label Ajust")
+             (clojure.pprint/pprint label-adjust-opts)
+             (lay/label-adjust! gm 500 label-adjust-opts)))
+        (println "done")
+
+        ;; (println "starting Auto Layout")
+        ;; (time
+        ;;  (->> [[(lay/force-atlas force-opts) 0.5]
+        ;;        [(lay/yifan-hu yifan-opts) 0.2]
+        ;;        [(lay/label-adjust label-adjust-opts) 0.3]]
+        ;;       (lay/auto-layout! gm 120000)))
+        ;;  (println "done")
        )
 
 
-  (exp/export-graph-file! "test.pdf")
-  (exp/export-graph-file! "test.png")
-  (exp/export-graph-file! "test.svg")
-  (exp/export-graph-file! "test.gexf")
+  (exp/export-graph-file! (str filepath ".pdf"))
+  (exp/export-graph-file! (str filepath ".png"))
+  (exp/export-graph-file! (str filepath ".svg"))
+  (exp/export-graph-file! (str filepath ".gexf"))
   )

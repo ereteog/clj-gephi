@@ -5,8 +5,11 @@
   (:import [org.gephi.layout.plugin.forceAtlas ForceAtlasLayout])
   (:import [org.gephi.layout.plugin AutoLayout])
   (:import [java.util.concurrent TimeUnit])
+  (:import [org.gephi.layout.plugin.noverlap NoverlapLayout])
   (:import [org.gephi.layout.plugin.labelAdjust LabelAdjust])
   )
+
+;; https://gephi.org/tutorials/gephi-tutorial-layouts.pdf
 
 (s/defschema YifanHuOpts
   {
@@ -17,7 +20,7 @@
    (s/optional-key :initial-step)           s/Num
    (s/optional-key :optimal-distance)       s/Num
    (s/optional-key :quad-tree-max-level)    s/Num
-   (s/optional-key :relative-strength)      s/Num                                                  (s/optional-key :step)                   s/Num
+   (s/optional-key :relative-strength)      s/Num                                         (s/optional-key :step)                   s/Num
    (s/optional-key :step-ratio)             s/Num
    })
 
@@ -43,6 +46,13 @@
    (s/optional-key :speed)                             s/Num
    })
 
+(s/defschema NoverlapOpts
+  {
+   (s/optional-key :margin)                            s/Num
+   (s/optional-key :ratio)                             s/Num
+   (s/optional-key :speed)                             s/Num
+   })
+
 (defn update-yifan-hu!
   "YifanHuOpts -> YifanHuLayout"
   [lay opts]
@@ -56,24 +66,15 @@
          relative-strength         :relative-strength
          step                      :step
          step-ratio                :step-ratio} opts]
-    (when adaptive-cooling?
-      (.setAdaptiveCooling lay adaptive-cooling?))
-    (when barnes-hut-theta
-      (.setBarnesHutTheta lay barnes-hut-theta))
-    (when convergence-threshold
-      (.setConvergenceThreshold lay convergence-threshold))
-    (when initial-step
-      (.setInitialStep lay initial-step))
-    (when optimal-distance
-      (.setOptimalDistance optimal-distance))
-    (when quad-tree-max-level
-      (.setQuadTreeMaxLevel lay quad-tree-max-level))
-    (when relative-strength
-      (.setRelativeStrength lay relative-strength))
-    (when step
-      (.setStep lay step))
-    (when step-ratio
-      (.setStepRatio lay step-ratio))
+    (some->> adaptive-cooling?  (.setAdaptiveCooling lay))
+    (some->> barnes-hut-theta  (.setBarnesHutTheta lay))
+    (some->> convergence-threshold (.setConvergenceThreshold lay))
+    (some->> initial-step       (.setInitialStep lay))
+    (some->> optimal-distance (.setOptimalDistance lay))
+    (some->> quad-tree-max-level (.setQuadTreeMaxLevel lay))
+    (some->> relative-strength (.setRelativeStrength lay))
+    (some->> step (.setStep lay))
+    (some->> step-ratio (.setStepRatio lay))
     lay))
 
 (defn yifan-hu
@@ -100,30 +101,19 @@
          outbound-attraction-distribution  :outbound-attraction-distribution
          repulsion-strength                :repulsion-strength
          speed                             :speed} opts]
-    (when adjust-sizes?
-      (.setAdjustSizes lay adjust-sizes?))
-    (when attraction-strength
-    	(.setAttractionStrength lay attraction-strength))
-    (when cooling
-    	(.setCooling lay cooling))
-    (when freeze-balance?
-    	(.setFreezeBalance lay freeze-balance?))
-    (when freeze-inertia
-    	(.setFreezeInertia lay freeze-inertia))
-    (when freeze-strength
-    	(.setFreezeStrength lay freeze-strength))
-    (when gravity
-      (.setGravity lay gravity))
-    (when inertia
-    	(.setInertia lay inertia))
-    (when max-displacement
-    	(.setMaxDisplacement lay max-displacement))
-    (when outbound-attraction-distribution
-    	(.setOutboundAttractionDistribution lay outbound-attraction-distribution))
-    (when repulsion-strength
-    	(.setRepulsionStrength lay repulsion-strength))
-    (when speed
-    	(.setSpeed lay speed))
+    (some->> adjust-sizes? (.setAdjustSizes lay))
+    (some->> attraction-strength	(.setAttractionStrength lay))
+    (some->> cooling (.setCooling lay))
+    (some->> freeze-balance? (.setFreezeBalance lay))
+    (some->> freeze-inertia	(.setFreezeInertia lay))
+    (some->> freeze-strength (.setFreezeStrength lay))
+    (some->> gravity (.setGravity lay))
+    (some->> inertia	(.setInertia lay))
+    (some->> max-displacement	(.setMaxDisplacement lay))
+    (some->> outbound-attraction-distribution
+             (.setOutboundAttractionDistribution lay))
+    (some->> repulsion-strength	(.setRepulsionStrength lay))
+    (some->> speed	(.setSpeed lay))
     lay))
 
 (defn force-atlas
@@ -140,10 +130,8 @@
   (s/validate LabelAdjustOpts opts)
   (let [{adjust-by-size?  :adjust-by-size?
          speed            :speed} opts]
-    (when adjust-by-size?
-    	(.setAdjustBySize lay adjust-by-size?))
-    (when speed
-    	(.setSpeed lay speed))
+    (some->> adjust-by-size?	(.setAdjustBySize lay))
+    (some->> speed	(.setSpeed lay))
     lay))
 
 (defn label-adjust
@@ -152,6 +140,26 @@
   (let [lay (LabelAdjust. nil)]
     (.resetPropertiesValues lay)
     (update-label-adjust! lay opts)
+    lay))
+
+(defn update-noverlap!
+  "NoverlapLayout -> NoverlapOpts -> NoverlapLayout"
+  [lay opts]
+  (s/validate NoverlapOpts opts)
+  (let [{margin :margin
+         ratio  :ratio
+         speed  :speed} opts]
+    (some->> margin (.setMargin lay))
+    (some->> ratio(.setRatio lay))
+    (some->> speed (.setSpeed lay))
+    lay))
+
+(defn noverlap
+  "LabelAdjustOpts -> LabelAdjust"
+  [opts]
+  (let [lay (NoverlapLayout. nil)]
+    (.resetPropertiesValues lay)
+    (update-noverlap! lay opts)
     lay))
 
 (defn layout!
@@ -182,6 +190,12 @@
   "GraphModel -> LabelAdjust"
   [gm nb-loops opts]
   (->> (label-adjust opts)
+       (layout! gm nb-loops)))
+
+(defn noverlap!
+  "GraphModel -> Noverlap"
+  [gm nb-loops opts]
+  (->> (noverlap opts)
        (layout! gm nb-loops)))
 
 (defn auto-layout
