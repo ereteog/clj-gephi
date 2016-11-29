@@ -35,3 +35,39 @@
   [g]
   (.getEdgeCount g))
 
+(defn node
+  "GraphModel -> Node
+https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
+  "
+  ([gm]
+   (-> (.factory gm)
+       (.newNode)))
+  ([gm node-id]
+   (-> (.factory gm)
+       (.newNode node-id)))
+  ([gm node-id label]
+   (doto (node gm node-id)
+     (.setLabel label))))
+
+(defn edge
+  "GraphModel -> Node -> Node -> Edge
+  https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
+  ([gm node1 node2]
+   (-> (.factory gm)
+       (.newEdge node1 node2)))
+  ([gm node1 node2 directed?]
+   (-> (.factory gm)
+       (.newEdge node1 node2 directed?)))
+  ([gm node1 node2 directed? edge-type]
+   (-> (.factory gm)
+       (.newEdge node1 node2 edge-type directed?)))
+  ([gm node1 node2 directed? edge-type weight]
+   (-> (.factory gm)
+       (.newEdge node1 node2 edge-type weight directed?)))
+  ([gm node1 node2 directed? edge-type weight id]
+   (-> (.factory gm)
+       (.newEdge id node1 node2 edge-type weight directed?))))
+
+
+(defn add-node! [g node] (.addNode g node) g)
+(defn add-edge! [g edge] (.addEdge g edge) g)
