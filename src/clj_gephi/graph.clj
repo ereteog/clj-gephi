@@ -7,8 +7,8 @@
 
 (defn graph-model
   "GraphModel"
-  []
-  (.getGraphModel gc))
+  ([] (.getGraphModel gc))
+  ([wp] (.getGraphModel gc wp)))
 
 (defn undirected-graph
   "GraphModel -> UndirectedGraph"
@@ -68,6 +68,22 @@ https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
    (-> (.factory gm)
        (.newEdge id node1 node2 edge-type weight directed?))))
 
+(defn source
+  "Edge -> Node"
+  [edge]
+  (.getSource edge))
+
+(defn target
+  "Edge -> Node"
+  [edge]
+  (.getTarget edge))
 
 (defn add-node! [g node] (.addNode g node) g)
-(defn add-edge! [g edge] (.addEdge g edge) g)
+(defn add-edge!
+  ([g edge] (.addEdge g edge) g)
+  ([g edge add-nodes?]
+   (when add-nodes?
+     (->> edge source (add-node! g))
+     (->> edge target (add-node! g)))
+   (add-edge! g edge)))
+

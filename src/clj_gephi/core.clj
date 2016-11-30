@@ -15,7 +15,8 @@
 (defn test-gephi
   "https://github.com/gephi/gephi-toolkit-demos/blob/master/src/main/java/org/gephi/toolkit/demos/HeadlessSimple.java"
   [filepath]
-  (def wp (p/new-project!))
+  (p/new-project!)
+  (def wp (p/current-workspace))
   (def gm (g/graph-model))
   ;;(imp/import-graph-file! wp "resources/netowrk-twitter-sarko-20130706.gexf" true)
   (imp/import-graph-file! wp filepath false)
