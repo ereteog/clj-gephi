@@ -29,7 +29,6 @@
   (.deleteWorkspace pc wp)
   wp)
 
-
 (defn current-project
   "return current project"
   [] (.getCurrentProject pc))

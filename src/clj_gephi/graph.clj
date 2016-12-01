@@ -78,7 +78,15 @@ https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
   [edge]
   (.getTarget edge))
 
-(defn add-node! [g node] (.addNode g node) g)
+(defn has-node?
+  [g node-id]
+  (.hasNode g node-id))
+
+(defn add-node! [g node]
+  (when-not (has-node? g (.getId node))
+    (.addNode g node))
+  g)
+
 (defn add-edge!
   ([g edge] (.addEdge g edge) g)
   ([g edge add-nodes?]
