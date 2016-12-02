@@ -63,8 +63,9 @@
        (node (.getModel g) id)))
   ([g id label]
    (or (node-by-id g id)
-       (do (node (.getModel g) id)
-           (.setLabel label)))))
+       (let [created (node (.getModel g) id)]
+         (.setLabel created label)
+         created))))
 
 (defmulti edge
   "https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
@@ -101,10 +102,10 @@
 (defn add-node! [g node] (.addNode g node))
 
 (defn add-edge!
-  ([g edge] (.addEdge g edge) g)
-  ([g edge add-nodes?]
+  ([g e] (.addEdge g e) g)
+  ([g e add-nodes?]
    (when add-nodes?
-     (->> edge source (add-node! g))
-     (->> edge target (add-node! g)))
-   (add-edge! g edge)))
+     (->> e source (add-node! g))
+     (->> e target (add-node! g)))
+   (add-edge! g e)))
 
