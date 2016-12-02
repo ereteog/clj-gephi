@@ -1,5 +1,5 @@
 (ns clj-gephi.graph
-  (import [org.gephi.graph.api GraphController GraphModel])
+  (import [org.gephi.graph.api GraphController GraphModel Graph])
   (import [org.openide.util Lookup]))
 
 (def gc
@@ -35,10 +35,18 @@
   [g]
   (.getEdgeCount g))
 
-(defn node
-  "GraphModel -> Node
-https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
-  "
+(defn has-node?
+  [g node-id]
+  (.hasNode g node-id))
+
+(defn node-by-id
+  [g node-id]
+  (.getNode g node-id))
+
+(defmulti node
+  "(GraphModel | Graph) -> Node"
+  (fn [x & args] (class x)))
+(defmethod node GraphModel
   ([gm]
    (-> (.factory gm)
        (.newNode)))
@@ -48,10 +56,18 @@ https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
   ([gm node-id label]
    (doto (node gm node-id)
      (.setLabel label))))
+(defmethod node Graph
+  ([g] (node (.getModel g)))
+  ([g id]
+   (or (node-by-id id)
+       (apply node (.getModel g) id)))
+  ([g id label]
+   (-> (node g id) (.setLabel label))))
 
-(defn edge
-  "GraphModel -> Node -> Node -> Edge
-  https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
+(defmulti edge
+  "https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
+  (fn [x & args] (class x)))
+(defmethod edge GraphModel
   ([gm node1 node2]
    (-> (.factory gm)
        (.newEdge node1 node2)))
@@ -67,6 +83,8 @@ https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
   ([gm node1 node2 directed? edge-type weight id]
    (-> (.factory gm)
        (.newEdge id node1 node2 edge-type weight directed?))))
+(defmethod edge Graph
+  [gm & args] (apply edge (.getModel g) args))
 
 (defn source
   "Edge -> Node"
@@ -78,14 +96,7 @@ https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html
   [edge]
   (.getTarget edge))
 
-(defn has-node?
-  [g node-id]
-  (.hasNode g node-id))
-
-(defn add-node! [g node]
-  (when-not (has-node? g (.getId node))
-    (.addNode g node))
-  g)
+(defn add-node! [g node] (.addNode g node))
 
 (defn add-edge!
   ([g edge] (.addEdge g edge) g)
