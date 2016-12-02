@@ -59,10 +59,12 @@
 (defmethod node Graph
   ([g] (node (.getModel g)))
   ([g id]
-   (or (node-by-id id)
-       (apply node (.getModel g) id)))
+   (or (node-by-id g id)
+       (node (.getModel g) id)))
   ([g id label]
-   (-> (node g id) (.setLabel label))))
+   (or (node-by-id g id)
+       (do (node (.getModel g) id)
+           (.setLabel label)))))
 
 (defmulti edge
   "https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
@@ -84,7 +86,7 @@
    (-> (.factory gm)
        (.newEdge id node1 node2 edge-type weight directed?))))
 (defmethod edge Graph
-  [gm & args] (apply edge (.getModel g) args))
+  [g & args] (apply edge (.getModel g) args))
 
 (defn source
   "Edge -> Node"
