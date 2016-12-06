@@ -22,21 +22,14 @@
   (imp/import-graph-file! wp filepath false)
 
   ;; print graph stats
-  (let [graph (g/undirected-graph gm)]
-    (println "Nodes: " (g/node-count graph))
-    (println "Edges: " (g/edge-count graph)))
-
-  (let [d (stat/distance! gm false)]
-    (println "diameter: " (stat/diameter d))
-    (println "avg-distance: " (stat/avg-distance d)))
-
-
-  (let [
+  (let [graph (g/undirected-graph gm)
         dist (stat/distance! gm false)
         pr   (stat/pagerank! gm false)
         d    (stat/degree! gm)
         mo   (stat/modularity! gm)
         ]
+    (println "Nodes: " (g/node-count graph))
+    (println "Edges: " (g/edge-count graph))
     (println "average degree: " (stat/average-degree d))
     (println "diameter: "       (stat/diameter dist))
     (println "avg-distance: "   (stat/avg-distance dist))
@@ -113,8 +106,8 @@
        )
 
 
-  (exp/export-graph-file! (str filepath ".pdf"))
   (exp/export-graph-file! (str filepath ".png"))
   (exp/export-graph-file! (str filepath ".svg"))
-  (exp/export-graph-file! (str filepath ".gexf"))
+  (exp/export-graph-file! (str filepath ".pdf") wp)
+  (exp/export-graph-file! (str filepath ".gexf") "gexf" wp true)
   )

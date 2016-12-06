@@ -13,11 +13,18 @@
           n1  (g/node gm1 "n1" "n1 label") ;; create from GraphModel instance
           n2  (g/node g1 "n2" "n2 label") ;; create from graph with new id
           _   (g/add-node! g1 n1)
-          n3  (g/node g1 "n1" "n1 with another label") ;; created from graph with existing id
+          n3  (g/node! g1 "n1" "n1 with another label") ;; created from graph with existing id
           ]
       (is (= "n1" (.getId n1)))
       (is (= "n1 label" (.getLabel n1)))
       (is (= "n2" (.getId n2)))
       (is (= "n2 label" (.getLabel n2)))
-      (is (= "n1 label" (.getLabel n3))))))
+      (is (= "n1 label" (.getLabel n3)))
+      (g/add-node! g1 n3)
+      (is (= 1 (g/node-count g1)))
+      (g/add-node! g1 n2)
+      (is (= 2 (g/node-count g1)))
+      (g/clear-nodes g1)
+      (is (= 0 (g/node-count g1)))
+      )))
 

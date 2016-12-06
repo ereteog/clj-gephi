@@ -67,6 +67,15 @@
          (.setLabel created label)
          created))))
 
+(defn add-node! [g n]
+  (.addNode g n)
+  n)
+
+(defn node! [g & args]
+  "Graph -> Node"
+  (->> (apply node g args)
+       (add-node! g)))
+
 (defmulti edge
   "https://gephi.org/gephi/0.9.1/apidocs/org/gephi/graph/api/GraphFactory.html"
   (fn [x & args] (class x)))
@@ -89,6 +98,14 @@
 (defmethod edge Graph
   [g & args] (apply edge (.getModel g) args))
 
+(defn add-edge!
+  [g e] (.addEdge g e) e)
+
+(defn edge! [g & args]
+  "Graph -> Edge"
+  (->> (apply edge g args)
+       (add-edge! g)))
+
 (defn source
   "Edge -> Node"
   [edge]
@@ -99,13 +116,15 @@
   [edge]
   (.getTarget edge))
 
-(defn add-node! [g node] (.addNode g node))
+(defn all-nodes [g]
+  (.toCollection (.getNodes g)))
 
-(defn add-edge!
-  ([g e] (.addEdge g e) g)
-  ([g e add-nodes?]
-   (when add-nodes?
-     (->> e source (add-node! g))
-     (->> e target (add-node! g)))
-   (add-edge! g e)))
+(defn all-edges
+  ([g]       (.toCollection (.getEdges g)))
+  ([g n1]    (.toCollection (.getEdges g n1)))
+  ([g n1 n2] (.toCollection (.getEdges g n1 n2))))
 
+(defn clear-nodes
+  "Graph -> Graph"
+  [g]
+  (.removeAllNodes g (all-nodes g)))
