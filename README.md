@@ -20,9 +20,11 @@ A Clojure Wrapper for gephi toolkit
     (import [java.awt Font])
     
 import graph from file
+
     (imp/import-graph-file! wp filepath false)
     
 graph stats
+
     (let [graph (g/undirected-graph gm)
           dist (stat/distance! gm false)
           pr   (stat/pagerank! gm false)
@@ -36,6 +38,7 @@ graph stats
       (println "avg-distance: "   (stat/avg-distance dist))
     
 filter graph
+
     (f/filter-by-degree! gm (f/visible-view gm) 4)
     (let [graph (g/visible-graph gm)]
       (println "Filtered nodes: " (g/node-count graph))
@@ -43,9 +46,10 @@ filter graph
     
     
 size - colors
+
     (let [graph (g/visible-graph gm)
           am (app/appearance-model)]
-                                          ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
+      ;(app/color-by-degree! am graph [(Color. 0xFEF0D9) (Color. 0xB3000)] [0 1])
       (app/color-by-modularity! am graph gm)
       (app/size-by-pagerank! graph am gm 3 30)
       ;;(app/size-by-degree! graph am gm 8 20)
@@ -62,6 +66,7 @@ size - colors
       )
       
 layout it
+
     (let [force-opts {:attraction-strength 1.5
                       :repulsion-strength  0.5}
           yifan-opts {:step-displacement 1
@@ -103,7 +108,8 @@ layout it
           ;;  (println "done")
          )
     
-export 
+export
+
     (exp/export-graph-file! (str filepath ".png"))
     (exp/export-graph-file! (str filepath ".svg"))
     (exp/export-graph-file! (str filepath ".pdf") wp)
