@@ -29,8 +29,7 @@ graph stats
           dist (stat/distance! gm false)
           pr   (stat/pagerank! gm false)
           d    (stat/degree! gm)
-          mo   (stat/modularity! gm)
-          ]
+          mo   (stat/modularity! gm)]
       (println "Nodes: " (g/node-count graph))
       (println "Edges: " (g/edge-count graph))
       (println "average degree: " (stat/average-degree d))
