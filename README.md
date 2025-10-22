@@ -2,6 +2,7 @@
 
 A Clojure wrapper for the [Gephi Toolkit](https://github.com/gephi/gephi-toolkit), providing idiomatic Clojure access to powerful network analysis and visualization capabilities.
 
+[![CI](https://github.com/ereteog/clj-gephi/workflows/CI/badge.svg)](https://github.com/ereteog/clj-gephi/actions)
 [![Clojars Project](https://img.shields.io/clojars/v/clj-gephi.svg)](https://clojars.org/clj-gephi)
 [![License](https://img.shields.io/badge/License-EPL%201.0-blue.svg)](https://opensource.org/licenses/EPL-1.0)
 
