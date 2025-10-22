@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
+    <meta lastmodifieddate="2024-01-01">
+        <creator>clj-gephi Test Suite</creator>
+        <description>Sample network for testing</description>
+    </meta>
+    <graph mode="static" defaultedgetype="undirected">
+        <nodes>
+            <node id="alice" label="Alice" />
+            <node id="bob" label="Bob" />
+            <node id="charlie" label="Charlie" />
+            <node id="diana" label="Diana" />
+            <node id="eve" label="Eve" />
+        </nodes>
+        <edges>
+            <edge id="0" source="alice" target="bob" />
+            <edge id="1" source="alice" target="charlie" />
+            <edge id="2" source="bob" target="charlie" />
+            <edge id="3" source="bob" target="diana" />
+            <edge id="4" source="charlie" target="diana" />
+            <edge id="5" source="diana" target="eve" />
+        </edges>
+    </graph>
+</gexf>
