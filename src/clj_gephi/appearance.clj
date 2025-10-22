@@ -1,19 +1,12 @@
 (ns clj-gephi.appearance
-  (import [org.openide.util Lookup])
-  (import [org.gephi.appearance.api AppearanceController])
-  (import [org.gephi.appearance.api AppearanceModel AppearanceModel$GraphFunction])
-  (import [org.gephi.appearance.api Function])
-  (import [org.gephi.appearance.plugin RankingElementColorTransformer])
-  (import [org.gephi.appearance.plugin RankingNodeSizeTransformer])
-  (import [org.gephi.appearance.api Function])
-  (import [org.gephi.appearance.api Partition])
-  (import [org.gephi.appearance.api PartitionFunction])
-  (import [org.gephi.appearance.plugin PartitionElementColorTransformer])
-  (import [org.gephi.appearance.plugin.palette Palette])
-  (import [org.gephi.appearance.plugin.palette PaletteManager])
-  (import [java.awt Color])
-  (require [clj-gephi.statistics :as stats])
-  )
+  (:require [clj-gephi.statistics :as stats])
+  (:import [org.openide.util Lookup]
+           [org.gephi.appearance.api AppearanceController AppearanceModel AppearanceModel$GraphFunction
+            Function Partition PartitionFunction]
+           [org.gephi.appearance.plugin RankingElementColorTransformer RankingNodeSizeTransformer
+            PartitionElementColorTransformer]
+           [org.gephi.appearance.plugin.palette Palette PaletteManager]
+           [java.awt Color]))
 
 (def ac (.lookup (Lookup/getDefault) AppearanceController))
 
@@ -29,8 +22,7 @@
 (defn color-degree-ranking
   "AppearanceModel -> Graph -> Function"
   [am graph]
-  (function am graph AppearanceModel$GraphFunction/NODE_DEGREE RankingElementColorTransformer)
-  )
+  (function am graph AppearanceModel$GraphFunction/NODE_DEGREE RankingElementColorTransformer))
 
 (defn centrality-ranking
   "AppearanceModel -> Graph -> GraphModel -> String -> Function"
@@ -104,8 +96,7 @@
   ([am graph gm palette-fn]
    (color-by-partition! am graph gm stats/modularity-idx palette-fn))
   ([am graph gm]
-   (color-by-partition! am graph gm stats/modularity-idx))
-  )
+   (color-by-partition! am graph gm stats/modularity-idx)))
 
 (defn size-by!
   [ranking graph am min-size max-size]
@@ -119,7 +110,6 @@
   [graph am gm min-size max-size]
   (size-by! (degree-ranking am graph gm)
             graph am min-size max-size))
-  
 
 (defn size-by-pagerank!
   [graph am gm min-size max-size]

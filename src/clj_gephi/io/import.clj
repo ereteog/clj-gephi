@@ -1,8 +1,8 @@
 (ns clj-gephi.io.import
-  (require [clojure.java.io :as io])
-  (import [org.gephi.io.processor.plugin DefaultProcessor])
-  (import [org.gephi.io.importer.api Container ImportController EdgeDirectionDefault])
-  (import [org.openide.util Lookup]))
+  (:require [clojure.java.io :as io])
+  (:import [org.gephi.io.processor.plugin DefaultProcessor]
+           [org.gephi.io.importer.api Container ImportController EdgeDirectionDefault]
+           [org.openide.util Lookup]))
 
 (def ic
   (.lookup (Lookup/getDefault)  ImportController))

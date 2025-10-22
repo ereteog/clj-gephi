@@ -1,15 +1,12 @@
 (ns clj-gephi.filters
-  (import [org.openide.util Lookup])
-  (import [org.gephi.filters.api FilterController])
-  (import [org.gephi.filters.api Query])
-  (import [org.gephi.filters.api Range])
-  (import [org.gephi.filters.plugin.graph DegreeRangeBuilder$DegreeRangeFilter])
-  )
+  (:import [org.openide.util Lookup]
+           [org.gephi.filters.api FilterController Query Range]
+           [org.gephi.filters.plugin.graph DegreeRangeBuilder$DegreeRangeFilter]))
 
 (def fc (.lookup (Lookup/getDefault) FilterController))
 
 (defn view-by-degree
-  "GraphModel -> GraphView -> int -> int-> GraphView"
+  "GraphModel -> GraphView -> int -> int -> GraphView"
   ([gm view min-degree max-degree]
    (let [graph (if (nil? view)
                  (.getGraph gm)
@@ -34,10 +31,10 @@
   gm)
 
 (defn filter-by-degree!
-  "GraphModel -> GraphView -> int -> int-> GraphModel"
+  "GraphModel -> GraphView -> int -> int -> GraphModel"
   ([gm view min-degree max-degree]
    (->> (view-by-degree gm view min-degree max-degree)
         (set-visible-view! gm)))
-   ([gm view min-degree]
-    (filter-by-degree! gm view min-degree Integer/MAX_VALUE)))
+  ([gm view min-degree]
+   (filter-by-degree! gm view min-degree Integer/MAX_VALUE)))
 

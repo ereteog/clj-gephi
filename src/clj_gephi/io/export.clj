@@ -1,10 +1,9 @@
 (ns clj-gephi.io.export
-  (require [clojure.java.io :as io]
-           [clj-gephi.project :as p])
-  (import [org.openide.util Lookup])
-  (import [org.gephi.io.exporter.api ExportController])
-  (import [org.gephi.io.exporter.spi GraphExporter])
-  )
+  (:require [clojure.java.io :as io]
+            [clj-gephi.project :as p])
+  (:import [org.openide.util Lookup]
+           [org.gephi.io.exporter.api ExportController]
+           [org.gephi.io.exporter.spi GraphExporter]))
 
 (def ec
   (.lookup (Lookup/getDefault)  ExportController))

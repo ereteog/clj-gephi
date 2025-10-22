@@ -1,11 +1,8 @@
 (ns clj-gephi.preview
-  (import [org.gephi.preview.api PreviewController])
-  (import [org.gephi.preview.api PreviewModel])
-  (import [org.gephi.preview.api PreviewProperty])
-  (import [org.gephi.preview.types EdgeColor])
-  (import [org.openide.util Lookup])
-  (import [java.awt Color])
-  )
+  (:import [org.gephi.preview.api PreviewController PreviewModel PreviewProperty]
+           [org.gephi.preview.types EdgeColor]
+           [org.openide.util Lookup]
+           [java.awt Color]))
 
 (def pc
   (.lookup (Lookup/getDefault) PreviewController))
