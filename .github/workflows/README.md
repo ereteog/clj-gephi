@@ -9,7 +9,7 @@ The main CI workflow runs on every push and pull request to the main branches.
 ### Jobs
 
 #### 1. Test
-- **Matrix Strategy**: Tests on Java 8, 11, and 17
+- **Matrix Strategy**: Tests on Java 11 and 17 (LTS versions)
 - **Steps**:
   - Checkout code
   - Setup Java environment

@@ -59,7 +59,7 @@ This library allows you to:
 
 ## Requirements
 
-- **Java**: JDK 8 or higher
+- **Java**: JDK 11 or higher (tested on 11 and 17)
 - **Clojure**: 1.11.1 or higher
 - **Gephi Toolkit**: 0.10.1 (automatically resolved)
 
