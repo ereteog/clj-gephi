@@ -44,7 +44,7 @@
     ;; Configure preview
     (let [pm (prev/preview-model)
           font (-> (prev/node-font-label pm)
-                   (.deriveFont 8))]
+                   (.deriveFont (float 8)))]
       (prev/show-node-labels! pm true)
       (prev/edge-color! pm Color/LIGHT_GRAY)
       (prev/edge-thickness! pm 0.01)

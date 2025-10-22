@@ -255,7 +255,7 @@ Or for `deps.edn`:
 ;; Configure preview settings
 (let [pm (prev/preview-model)
       font (-> (prev/node-font-label pm)
-               (.deriveFont 8.0))]
+               (.deriveFont (float 8.0)))]
   (prev/show-node-labels! pm true)
   (prev/edge-color! pm Color/GRAY)
   (prev/edge-thickness! pm 0.5)

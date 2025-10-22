@@ -15,9 +15,10 @@
   (.getModel ac))
 
 (defn function
-  "AppearanceModel -> Graph -> GraphFunction -> Transformer -> Function"
-  [am graph function transformer]
-  (.getNodeFunction am graph function transformer))
+  "AppearanceModel -> Graph -> Column/GraphFunction -> Transformer -> Function
+  In Gephi 0.10.1, getNodeFunction signature changed to not require graph parameter"
+  [am graph column-or-function transformer]
+  (.getNodeFunction am column-or-function transformer))
 
 (defn color-degree-ranking
   "AppearanceModel -> Graph -> Function"
@@ -27,7 +28,7 @@
 (defn centrality-ranking
   "AppearanceModel -> Graph -> GraphModel -> String -> Function"
   [am graph gm c-idx]
-  (.getNodeFunction am graph
+  (.getNodeFunction am
                     (stats/column gm c-idx)
                     RankingNodeSizeTransformer))
 
@@ -101,8 +102,8 @@
 (defn size-by!
   [ranking graph am min-size max-size]
   (let [ct (.getTransformer ranking)]
-    (.setMinSize ct min-size)
-    (.setMaxSize ct max-size)
+    (.setMinSize ct (float min-size))
+    (.setMaxSize ct (float max-size))
     (.transform ac ranking))
   am)
 
