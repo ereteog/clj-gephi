@@ -1,6 +1,6 @@
 (ns clj-gephi.graph
-  (import [org.gephi.graph.api GraphController GraphModel Graph])
-  (import [org.openide.util Lookup]))
+  (:import [org.gephi.graph.api GraphController GraphModel Graph]
+           [org.openide.util Lookup]))
 
 (def gc
   (.lookup (Lookup/getDefault) GraphController))

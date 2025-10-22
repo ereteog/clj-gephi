@@ -1,8 +1,5 @@
 (ns clj-gephi.statistics
-  (import [org.gephi.statistics.plugin Modularity])
-  (import [org.gephi.statistics.plugin PageRank])
-  (import [org.gephi.statistics.plugin Degree])
-  (import [org.gephi.statistics.plugin GraphDistance]))
+  (:import [org.gephi.statistics.plugin Modularity PageRank Degree GraphDistance]))
 
 (def degree-idx Degree/DEGREE)
 (def indegree-idx Degree/INDEGREE)
@@ -26,8 +23,7 @@
 (defn average-degree
   "Degree -> Double"
   [degree]
-  (.getAverageDegree degree)
-  )
+  (.getAverageDegree degree))
 
 (defn pagerank!
   "GraphModel -> PageRank"
@@ -55,8 +51,7 @@
 (defn diameter
   "GraphDistance -> double"
   [gd]
-  (.getDiameter gd)
-  )
+  (.getDiameter gd))
 
 (defn avg-distance
   "GraphDistance -> double"

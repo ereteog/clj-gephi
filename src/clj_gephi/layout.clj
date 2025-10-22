@@ -1,32 +1,29 @@
 (ns clj-gephi.layout
   (:require [schema.core :as s])
-  (:import [org.gephi.layout.plugin.force StepDisplacement])
-  (:import [org.gephi.layout.plugin.force.yifanHu YifanHuLayout])
-  (:import [org.gephi.layout.plugin.forceAtlas ForceAtlasLayout])
-  (:import [org.gephi.layout.plugin AutoLayout])
-  (:import [java.util.concurrent TimeUnit])
-  (:import [org.gephi.layout.plugin.noverlap NoverlapLayout])
-  (:import [org.gephi.layout.plugin.labelAdjust LabelAdjust])
-  )
+  (:import [org.gephi.layout.plugin.force StepDisplacement]
+           [org.gephi.layout.plugin.force.yifanHu YifanHuLayout]
+           [org.gephi.layout.plugin.forceAtlas ForceAtlasLayout]
+           [org.gephi.layout.plugin AutoLayout]
+           [java.util.concurrent TimeUnit]
+           [org.gephi.layout.plugin.noverlap NoverlapLayout]
+           [org.gephi.layout.plugin.labelAdjust LabelAdjust]))
 
 ;; https://gephi.org/tutorials/gephi-tutorial-layouts.pdf
 
 (s/defschema YifanHuOpts
-  {
-   :step-displacement                       s/Num
+  {:step-displacement                       s/Num
    (s/optional-key :adaptive-cooling?)      s/Bool
    (s/optional-key :barnes-hut-theta)       s/Num
    (s/optional-key :convergence-threshold)  s/Num
    (s/optional-key :initial-step)           s/Num
    (s/optional-key :optimal-distance)       s/Num
    (s/optional-key :quad-tree-max-level)    s/Num
-   (s/optional-key :relative-strength)      s/Num                                         (s/optional-key :step)                   s/Num
-   (s/optional-key :step-ratio)             s/Num
-   })
+   (s/optional-key :relative-strength)      s/Num
+   (s/optional-key :step)                   s/Num
+   (s/optional-key :step-ratio)             s/Num})
 
 (s/defschema ForceAtlasOpts
-  {
-   (s/optional-key :adjust-sizes?)                     s/Bool
+  {(s/optional-key :adjust-sizes?)                     s/Bool
    (s/optional-key :attraction-strength)               s/Num
    (s/optional-key :cooling)                           s/Num
    (s/optional-key :freeze-balance?)                   s/Bool
@@ -37,35 +34,30 @@
    (s/optional-key :max-displacement)                  s/Num
    (s/optional-key :outbound-attraction-distribution)  s/Bool
    (s/optional-key :repulsion-strength)                s/Num
-   (s/optional-key :speed)                             s/Num
-   })
+   (s/optional-key :speed)                             s/Num})
 
 (s/defschema LabelAdjustOpts
-  {
-   (s/optional-key :adjust-by-size?)                   s/Bool
-   (s/optional-key :speed)                             s/Num
-   })
+  {(s/optional-key :adjust-by-size?)  s/Bool
+   (s/optional-key :speed)            s/Num})
 
 (s/defschema NoverlapOpts
-  {
-   (s/optional-key :margin)                            s/Num
-   (s/optional-key :ratio)                             s/Num
-   (s/optional-key :speed)                             s/Num
-   })
+  {(s/optional-key :margin)  s/Num
+   (s/optional-key :ratio)   s/Num
+   (s/optional-key :speed)   s/Num})
 
 (defn update-yifan-hu!
   "YifanHuOpts -> YifanHuLayout"
   [lay opts]
   (s/validate YifanHuOpts opts)
-  (let [{adaptive-cooling?         :adaptive-cooling?
-         barnes-hut-theta          :barnes-hut-theta
-         convergence-threshold     :convergence-threshold
-         initial-step              :initial-step
-         optimal-distance          :optiomal-distance
-         quad-tree-max-level       :quad-tree-max-level
-         relative-strength         :relative-strength
-         step                      :step
-         step-ratio                :step-ratio} opts]
+  (let [{adaptive-cooling?     :adaptive-cooling?
+         barnes-hut-theta      :barnes-hut-theta
+         convergence-threshold :convergence-threshold
+         initial-step          :initial-step
+         optimal-distance      :optimal-distance
+         quad-tree-max-level   :quad-tree-max-level
+         relative-strength     :relative-strength
+         step                  :step
+         step-ratio            :step-ratio} opts]
     (some->> adaptive-cooling?  (.setAdaptiveCooling lay))
     (some->> barnes-hut-theta  (.setBarnesHutTheta lay))
     (some->> convergence-threshold (.setConvergenceThreshold lay))
@@ -102,18 +94,18 @@
          repulsion-strength                :repulsion-strength
          speed                             :speed} opts]
     (some->> adjust-sizes? (.setAdjustSizes lay))
-    (some->> attraction-strength	(.setAttractionStrength lay))
+    (some->> attraction-strength (.setAttractionStrength lay))
     (some->> cooling (.setCooling lay))
     (some->> freeze-balance? (.setFreezeBalance lay))
-    (some->> freeze-inertia	(.setFreezeInertia lay))
+    (some->> freeze-inertia (.setFreezeInertia lay))
     (some->> freeze-strength (.setFreezeStrength lay))
     (some->> gravity (.setGravity lay))
-    (some->> inertia	(.setInertia lay))
-    (some->> max-displacement	(.setMaxDisplacement lay))
+    (some->> inertia (.setInertia lay))
+    (some->> max-displacement (.setMaxDisplacement lay))
     (some->> outbound-attraction-distribution
              (.setOutboundAttractionDistribution lay))
-    (some->> repulsion-strength	(.setRepulsionStrength lay))
-    (some->> speed	(.setSpeed lay))
+    (some->> repulsion-strength (.setRepulsionStrength lay))
+    (some->> speed (.setSpeed lay))
     lay))
 
 (defn force-atlas
@@ -128,10 +120,10 @@
   "LabelAdjust -> LabelAdjustOpts -> LabelAdjust"
   [lay opts]
   (s/validate LabelAdjustOpts opts)
-  (let [{adjust-by-size?  :adjust-by-size?
-         speed            :speed} opts]
-    (some->> adjust-by-size?	(.setAdjustBySize lay))
-    (some->> speed	(.setSpeed lay))
+  (let [{adjust-by-size? :adjust-by-size?
+         speed           :speed} opts]
+    (some->> adjust-by-size? (.setAdjustBySize lay))
+    (some->> speed (.setSpeed lay))
     lay))
 
 (defn label-adjust
@@ -150,7 +142,7 @@
          ratio  :ratio
          speed  :speed} opts]
     (some->> margin (.setMargin lay))
-    (some->> ratio(.setRatio lay))
+    (some->> ratio (.setRatio lay))
     (some->> speed (.setSpeed lay))
     lay))
 

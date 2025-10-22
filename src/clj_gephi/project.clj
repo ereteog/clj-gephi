@@ -1,7 +1,6 @@
 (ns clj-gephi.project
-  (import [org.openide.util Lookup])
-  (import [org.gephi.project.api ProjectController Workspace])
-  )
+  (:import [org.openide.util Lookup]
+           [org.gephi.project.api ProjectController Workspace]))
 
 (def pc
   (.lookup (Lookup/getDefault) ProjectController))
